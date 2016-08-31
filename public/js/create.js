@@ -14,6 +14,7 @@ var save = function() {
 			url: "/create",   //our endpoint in routes for creating a new record
 			type: 'POST',
 			dataType: "json",
+
 			//data is a JSON object that will contain our markdown
 			data: {
 				'markdown' : markdown

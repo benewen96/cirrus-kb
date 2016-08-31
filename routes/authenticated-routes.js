@@ -7,6 +7,9 @@ var AUTH_REQUIRED = false; // Controls whether this web app will require authent
 //include bodyparser middleware so we can get our markdown from AJAX
 var bodyParser = require('body-parser');
 
+//so we can save our kb entries
+var fs = require('fs');
+
 // middleware that is specific to this router
 router.use(bodyParser.json());
 
@@ -29,8 +32,19 @@ router.get('/create', function(req, res) {
 	return res.render('create');
 });
 
+/* When we get a POST request on create, use body-parser to retrieve
+   the markdown submitted then create a new file under kb folder
+   with the file name being the submit date that contains the
+   markdown.
+*/
 router.post('/create', function(req, res) {
-  console.log(req.body.markdown);
+  var now = new Date();
+  fs.writeFile("test/" + now + ".kb", req.body.markdown, function(err) {
+    if(err) {
+        return console.log(err);
+    }
+    console.log(req.body.markdown + " was saved!");
+  });
 })
 
 module.exports = router;
