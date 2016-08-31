@@ -39,7 +39,7 @@ router.get('/create', function(req, res) {
 */
 router.post('/create', function(req, res) {
   var now = new Date();
-  fs.writeFile("test/" + now + ".kb", req.body.markdown, function(err) {
+  fs.writeFile("kb/" + now + ".kb", req.body.markdown, function(err) {
     if(err) {
         return console.log(err);
     }
