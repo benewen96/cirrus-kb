@@ -1,0 +1,23 @@
+<div class="container">
+  <div class='row'>
+  <h2>{{name}}</h2>
+  <div class="alert alert-success alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				<h4>Browse articles...</h4>
+				<p>Here's a list of all articles on the knowledge base</p>
+			</div>
+    </div>
+    <div class='row'>
+  <div class="jumbotron">
+    <div class="jumbotron-contents">
+      <ul class="people_list">
+        {{#each article}}
+          <a href="/browse/{{this}}">{{this}}</a></br>
+        {{else}}
+          <p>No entries!</p>
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+</div>
+</div>

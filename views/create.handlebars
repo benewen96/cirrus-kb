@@ -9,10 +9,27 @@
 </head>
 
 <body>
-	<!--Text area for markdown editor -->
-	<textarea id='mdeditor'></textarea>
-	<!--Save button -->
-	<button id='save' onclick='save()'>Save</button>
+	<div class='container'>
+		<div class='row'>
+			<div class="alert alert-success alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				<h4>Add an article!</h4>
+				<p>By adding an article, you'll be helping the Cirrus team grow and maintain a centralised knowledge base for all to use :) </p>
+			</div>
+		</div>
+		<div class='row'>
+			<!--Text area for markdown editor -->
+			<textarea id='mdeditor'></textarea>
+		</div>
+
+		<div class='row'>
+			<div class='' style='width:20%;float:right;'>
+				<!--Save button -->
+				<button id='save' type="button" onclick='save()' class="btn btn-normal btn-block">Save</button>
+			</div>
+		</div>
+
+	</div>
 </body>
 
 <!--Initialise our markdown editor-->
