@@ -16,10 +16,24 @@
 
 **Development Add-Ons:** -
 
+**Development Notes:**
+* This application is primarily driven by:
+ *  Express, Handlebars (and it's helpers), and body-parser to handle feeding user input to the server.
+*  It's worth noting that this (currently) stores files locally, which is an issue if persistent storage is not available.
+*  The front-end is built with:
+	*  [https://bootflat.github.io/ ](https://bootflat.github.io/)for the layout
+	*  [https://simplemde.com/](https://simplemde.com/) for the markdown editor
+
 ---
 
 **Get Started:**
- TBC
+
+1. `npm install`
+2. `heroku local`
+3.  `http://localhost:5000`
+
+
+
 ---
 
 **Application Dependencies:**
