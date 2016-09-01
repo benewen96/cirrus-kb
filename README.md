@@ -1,4 +1,4 @@
-# Cirrus KB v0.1
+# Cirrus KB v0.5
 
 **Application Name:** Cirrus Knowledge Base
 
