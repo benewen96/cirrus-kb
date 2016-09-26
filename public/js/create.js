@@ -4,6 +4,7 @@ var simplemde = new SimpleMDE({
 		enabled: false
 	}
 });
+
 $( document ).ready(function() {
 	simplemde.codemirror.on("change", function(){
 		$('#save').text('Save')
@@ -13,6 +14,12 @@ $( document ).ready(function() {
 
 var save = function() {
 	var markdown = simplemde.value();
+	var jsonData = {
+		'markdown' : markdown,
+		'author' : $('#author').val(),
+		'title' : $('#article_title').val(),
+		'tags' : $('#tags').val()
+	}
 
 	if(markdown) {
 		$('#save').text('Thanks!')
@@ -24,9 +31,7 @@ var save = function() {
 			dataType: "json",
 
 			//data is a JSON object that will contain our markdown
-			data: {
-				'markdown' : markdown
-			},
+			data: jsonData,
 			success: function () {
 				console.log('success!');
 

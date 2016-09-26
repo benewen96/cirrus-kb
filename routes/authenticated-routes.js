@@ -9,7 +9,7 @@ var bodyParser = require('body-parser');
 
 //to parse markdown server side
 var md = require('markdown-it')();
-
+var conn = require('../controllers/salesforce_conn.js');
 //so we can save our kb entries
 var fs = require('fs');
 
@@ -55,47 +55,49 @@ with the file name being the submit date that contains the
 markdown.
 */
 router.post('/create', function(req, res) {
-  var id = makeid();
-  fs.writeFile("kb/" + id + ".kb", req.body.markdown, function(err) {
-    if(err) {
-      return console.log(err);
-    }
-    console.log(req.body.markdown + " was saved!");
+  console.log(req.body);
+
+  conn.sobject("CRKB_Entry__c").create({ Name : req.body.title, Article__c : req.body.markdown, Author__c : req.body.author, Tags__c : req.body.tags}, function(err, ret) {
+    if (err || !ret.success) { return console.error(err, ret); }
+    console.log("Created record id : " + req.body.title);
   });
+
   res.send(id);
 });
 
 //get the article with the following id
 router.get('/browse/:kbId', function(req, res) {
-  fs.readFile('kb/' + req.params.kbId + '.kb', 'utf8', function (err, data) {
-    if (err) { throw err;  }
-      return res.render('browseArticle', {
-      helpers: {
-        article: function () { return new Handlebars.SafeString(md.render(data)); },
-        name: function () { return new Handlebars.SafeString(req.params.kbId); }
-      }
+  conn.sobject("CRKB_Entry__c").retrieve(req.params.kbId, function(err, entry) {
+    if (err) { return console.error(err); }
+    console.log("Name : " + entry.Name);
+    return res.render('browseArticle', {
+        helpers: {
+          //handlebars helper functions to retrieve the id and (markdown rendered into html) content of an article
+          article: function () { return new Handlebars.SafeString(md.render(entry.Article__c)); },
+          name: function () { return new Handlebars.SafeString(entry.Name); }
+        }
     });
-
   });
 });
 
 router.get('/browse', function(req, res) {
   var articles = [];
-  fs.readdir("kb/",function(err, files){
-    if (err) {
-      return console.error(err);
-    }
-    files.forEach( function (file){
-      var article = file.toString();
-      articles.push(article.substring(0, article.length-3));
-      console.log(file);
-    });
-  });
 
-  return res.render('browse', {
-      article: articles
-    }
-  );
+  conn.query("SELECT Id, Name FROM CRKB_Entry__c", function(err, result) {
+    if (err) { return console.error(err); }
+    console.log("total : " + result.totalSize);
+    console.log("fetched : " + result.records.length);
+
+    result.records.forEach((record) => {
+      articles.push({id: record.Id, title: record.Name});
+    });
+
+    return res.render('browse', {
+        article: articles
+      }
+    );
+
+  });
 });
 
 module.exports = router;

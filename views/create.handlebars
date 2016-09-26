@@ -9,13 +9,25 @@
 </head>
 
 <body>
-	<div class='container'>
+	<div class='container' style='padding:10 10 0 0'>
 		<div class='row'>
 			<div class="alert alert-success alert-dismissable">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 				<h4>Add an article!</h4>
 				<p>By adding an article, you'll be helping the Cirrus team grow and maintain a centralised knowledge base for all to use :) </p>
 			</div>
+		</div>
+		<div class='row'>
+			<div class="col-md-4" style='padding:0 5 0 0;padding-bottom:20px'>
+        <input type="text"  id='article_title' class="form-control" placeholder="Article title">
+      </div>
+			<div class="col-md-4" style='padding:0 5 0 0;padding-bottom:20px'>
+        <input type="text"  id='author' class="form-control" placeholder="Author">
+      </div>
+			<div class="col-md-4" style='padding:0 5 0 0;padding-bottom:20px'>
+        <input type="text"  id='tags' class="form-control" placeholder="Tags (comma separated)">
+      </div>
+
 		</div>
 		<div class='row'>
 			<!--Text area for markdown editor -->
