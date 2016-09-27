@@ -10,13 +10,6 @@ const simplemde = new SimpleMDE({
   },
 });
 
-$(document).ready(() => {
-  simplemde.codemirror.on('change', () => {
-    $('#save').text('Save');
-    $('#save').attr('class', 'btn btn-normal btn-block');
-  });
-});
-
 const save = () => {
   const markdown = simplemde.value();
   const jsonData = {
@@ -44,3 +37,15 @@ const save = () => {
     });
   }
 };
+
+
+$(document).ready(() => {
+  simplemde.codemirror.on('change', () => {
+    $('#save').text('Save');
+    $('#save').attr('class', 'btn btn-normal btn-block');
+  });
+  // save event listener
+  $('#save').click(() => {
+    save();
+  });
+});

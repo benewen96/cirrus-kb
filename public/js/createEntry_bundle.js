@@ -58,13 +58,6 @@
 	  }
 	});
 
-	$(document).ready(function () {
-	  simplemde.codemirror.on('change', function () {
-	    $('#save').text('Save');
-	    $('#save').attr('class', 'btn btn-normal btn-block');
-	  });
-	});
-
 	var save = function save() {
 	  var markdown = simplemde.value();
 	  var jsonData = {
@@ -92,6 +85,17 @@
 	    });
 	  }
 	};
+
+	$(document).ready(function () {
+	  simplemde.codemirror.on('change', function () {
+	    $('#save').text('Save');
+	    $('#save').attr('class', 'btn btn-normal btn-block');
+	  });
+	  // save event listener
+	  $('#save').click(function () {
+	    save();
+	  });
+	});
 
 /***/ }
 /******/ ]);
