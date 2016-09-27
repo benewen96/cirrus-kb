@@ -28,14 +28,14 @@ var save = function() {
 		$.ajax({
 			url: "/create",   //our endpoint in routes for creating a new record
 			type: 'POST',
-			dataType: "json",
-
 			//data is a JSON object that will contain our markdown
 			data: jsonData,
 			success: function () {
 				console.log('success!');
-
-    	}
+    	},
+			error: function(data){
+				console.log(data);
+			}
 		});
 	}
 }

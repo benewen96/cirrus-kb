@@ -7,17 +7,21 @@
 				<p>Here's a list of all articles on the knowledge base</p>
 			</div>
     </div>
-    <div class='row'>
-  <div class="jumbotron">
-    <div class="jumbotron-contents">
-      <ul class="people_list">
-        {{#each article}}
-          <a href="/browse/{{this.id}}">{{this.title}}</a></br>
-        {{else}}
-          <p>No entries!</p>
-        {{/each}}
-      </ul>
+  <div class='row'>
+    <div class='search'>
+      <input id='searchfield' type="text" class="form-control search-query">
+    </div>
+    <div class="jumbotron">
+      <div class="jumbotron-contents">
+        <ul id="article_list">
+          {{#each article}}
+            <li><a href="/browse/{{this.id}}">{{this.title}}</a></li>
+          {{else}}
+            <p>No entries!</p>
+          {{/each}}
+        </ul>
+      </div>
     </div>
   </div>
 </div>
-</div>
+<script src='js/browse.js'></script>
