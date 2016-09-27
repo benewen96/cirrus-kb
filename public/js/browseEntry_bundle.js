@@ -46,7 +46,8 @@
 
 	'use strict';
 
-	var articles = lunr(function () {
+	// tell lunr our data model
+	var articles = lunr(function construct() {
 	  this.field('title', { boost: 10 });
 	  this.field('author');
 	  this.field('article');
@@ -72,27 +73,35 @@
 	    }
 	  } else {
 	    $('#article_list').empty();
-
+	    // lunr will search all articles for the current search value
 	    var res = articles.search($('#searchfield').val());
+	    // for each search result
 	    res.forEach(function (result) {
+	      // append the article list with each entry
 	      $('#article_list').append('<a href="/browse/' + store[result.ref].id + '" class="list-group-item">\n        <h4 class="list-group-item-heading">' + store[result.ref].title + '</h4>\n        <p class="list-group-item-text">By ' + store[result.ref].author + '</p>\n        </a>');
 	    });
 	  }
 	});
 
+	// this ajax request gets all the knowledge base articles from salesforce
+	// see routes for /json for how
 	$.ajax({
 	  url: '/json', // This URL is for Json file
 	  type: 'GET',
 	  dataType: 'json',
+	  // post returns all entries from kb
 	  success: function success(data) {
+	    // for each kb entry
 	    data.forEach(function (entry) {
+	      // add each entry into the lunr engine for tokenisation and indexing
 	      articles.add({
 	        id: entry.id,
 	        title: entry.title,
 	        author: entry.author,
 	        article: entry.article
 	      });
-
+	      // to be able to get O(1) lookup, add each entry to store object with id
+	      // means if we know id from lunr, can go store[id] to get entry instantly
 	      store[entry.id] = {
 	        id: entry.id,
 	        title: entry.title,
@@ -103,7 +112,7 @@
 	    });
 	  },
 	  error: function error() {
-	    // Do alert is error
+	    // hopefully nothing here :)
 	  }
 	});
 

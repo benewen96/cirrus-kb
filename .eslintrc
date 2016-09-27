@@ -7,6 +7,7 @@
 },
 "globals": {
   "SimpleMDE" : true,
+  "lunr" : true,
 },
 "rules": {
      "no-console": 0
