@@ -64,6 +64,7 @@ router.get('/browse/:kbId', (req, res) => {
         article() { return new Handlebars.SafeString(md.render(entry.Article__c)); },
         name() { return new Handlebars.SafeString(entry.Title__c); },
         author() { return new Handlebars.SafeString(entry.Author__c); },
+        url() { return new Handlebars.SafeString(`https://eu11.salesforce.com/${entry.Id}`); },
       },
     });
   });
