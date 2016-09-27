@@ -80,7 +80,7 @@ router.get('/browse/:kbId', function(req, res) {
 //this endpoint returns the entire kb in a json object
 router.get('/json', function(req, res) {
   var articles = [];
-  conn.query("SELECT Id, Name, Title__c Author__c, Article__c FROM CRKB_Entry__c", function(err, result) {
+  conn.query("SELECT Id, Title__c, Author__c, Article__c FROM CRKB_Entry__c", function(err, result) {
     if (err) { return console.error(err); }
     console.log("total : " + result.totalSize);
     console.log("fetched : " + result.records.length);
