@@ -40,7 +40,11 @@ the markdown submitted then create a new kb article and send to salesforce
 */
 router.post('/create', (req, res) => {
   // create a new entry on salesforce
-  conn.sobject('CRKB_Entry__c').create({ Title__c: req.body.title, Article__c: req.body.markdown, Author__c: req.body.author }, (err, ret) => {
+  conn.sobject('CRKB_Entry__c').create({
+    Title__c: req.body.title,
+    Article__c: req.body.markdown,
+    Author__c: req.body.author,
+  }, (err, ret) => {
     if (err || !ret.success) { return console.error(err, ret); }
     // return the success object back to ajax for id of record
     return res.send(ret);

@@ -98,7 +98,7 @@
 	  // if the markdown has been edited, allow the user to save
 	  simplemde.codemirror.on('change', function () {
 	    $('#save').text('Save');
-	    $('#save').attr('class', 'btn btn-normal btn-block');
+	    $('#save').attr('class', 'btn btn-success btn-block');
 	  });
 	  // save event listener
 	  $('#save').click(function () {
