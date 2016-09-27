@@ -8,19 +8,27 @@
 			</div>
     </div>
   <div class='row'>
-    <div class='search'>
-      <input id='searchfield' type="text" class="form-control search-query">
-    </div>
-    <div class="jumbotron">
-      <div class="jumbotron-contents">
-        <ul id="article_list">
-          {{#each article}}
-            <li><a href="/browse/{{this.id}}">{{this.title}}</a></li>
-          {{else}}
-            <p>No entries!</p>
-          {{/each}}
-        </ul>
+    <div class='search' style='padding-bottom:15px'>
+      <div class="form-search search-only">
+        <i class="search-icon glyphicon glyphicon-search"></i>
+        <input id='searchfield' type="text" class="form-control search-query">
       </div>
+    </div>
+  </div>
+
+  <div class='row'>
+    <div class="list-group" id='article_list'>
+      {{#each article}}
+        <a href="/browse/{{this.id}}" class="list-group-item">
+        <h4 class="list-group-item-heading">{{this.title}}</h4>
+        <p class="list-group-item-text">By {{this.author}}</p>
+        </a>
+      {{else}}
+      <a href="/browse/{{this.id}}" class="list-group-item">
+      <h4 class="list-group-item-heading">The knowledge base is empty :(</h4>
+      <p class="list-group-item-text"></p>
+      </a>
+      {{/each}}
     </div>
   </div>
 </div>

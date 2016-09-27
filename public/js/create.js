@@ -1,41 +1,46 @@
-var simplemde = new SimpleMDE({
-	element: $("#mdeditor")[0],
-	autosave: {
-		enabled: false
-	}
+/*
+  eslint-env browser
+  exported save
+*/
+
+const simplemde = new SimpleMDE({
+  element: $('#mdeditor')[0],
+  autosave: {
+    enabled: false,
+  },
 });
 
-$( document ).ready(function() {
-	simplemde.codemirror.on("change", function(){
-		$('#save').text('Save')
-		$('#save').attr('class', 'btn btn-normal btn-block');
-	});
+$(document).ready(() => {
+  simplemde.codemirror.on('change', () => {
+    $('#save').text('Save');
+    $('#save').attr('class', 'btn btn-normal btn-block');
+  });
 });
 
-var save = function() {
-	var markdown = simplemde.value();
-	var jsonData = {
-		'markdown' : markdown,
-		'author' : $('#author').val(),
-		'title' : $('#article_title').val(),
-		'tags' : $('#tags').val()
-	}
+const save = () => {
+  const markdown = simplemde.value();
+  const jsonData = {
+    markdown,
+    author: $('#author').val(),
+    title: $('#article_title').val(),
+    tags: $('#tags').val(),
+  };
 
-	if(markdown) {
-		$('#save').text('Thanks!')
-		$('#save').attr('class', 'btn btn-success btn-block disabled');
-		console.log(markdown);
-		$.ajax({
-			url: "/create",   //our endpoint in routes for creating a new record
-			type: 'POST',
-			//data is a JSON object that will contain our markdown
-			data: jsonData,
-			success: function () {
-				console.log('success!');
-    	},
-			error: function(data){
-				console.log(data);
-			}
-		});
-	}
-}
+  if (markdown) {
+    $('#save').text('Thanks!');
+    $('#save').attr('class', 'btn btn-success btn-block disabled');
+    $.ajax({
+      // our endpoint in routes for creating a new record
+      url: '/create',
+      type: 'POST',
+      // data is a JSON object that will contain our markdown
+      data: jsonData,
+      success(data) {
+        window.location.replace(`/browse/${data.id}`);
+      },
+      error(data) {
+        console.log(data);
+      },
+    });
+  }
+};
