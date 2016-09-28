@@ -119,11 +119,14 @@ router.get('/contributors', (req, res) => {
     console.log(`total : ${result.totalSize}`);
     console.log(`fetched : ${result.records.length}`);
 
-    // for each record from the query, add it to the articles json
+    // for each record from the query, add it to the contributors json
     result.records.forEach((record) => {
+      // if the author is newly discovered
       if (!contributors[record.Author__c]) {
+        // initialise it
         contributors[record.Author__c] = 0;
       }
+      // add 1 to their article count
       contributors[record.Author__c] += 1;
     });
 
@@ -131,17 +134,18 @@ router.get('/contributors', (req, res) => {
   });
 });
 
-// return list of top articles and how many articles they've wrote
+// return list of top authors and how many articles they've wrote
 router.get('/popular', (req, res) => {
-  // array of json for contributors
+  // array of json for popular contributors
   const pop = [];
 
+// query salesforce for articles ordered by views return max 3 in desc order
   conn.query('SELECT Views__c, Title__c, Id , Author__c FROM CRKB_Entry__c ORDER BY Views__c DESC NULLS LAST LIMIT 3', (err, result) => {
     if (err) { return console.error(err); }
     console.log(`total : ${result.totalSize}`);
     console.log(`fetched : ${result.records.length}`);
 
-    // for each record from the query, add it to the articles json
+    // for each record from the query, add it to the pop json
     result.records.forEach((record) => {
       pop.push({
         title: record.Title__c,
@@ -177,7 +181,7 @@ router.get('/browse', (req, res) => {
 
     // return the browse handlebars page and pass the articles json to be iterated by #each helper
     return res.render('browse', {
-        // handlebars variable that stores the articles
+      // handlebars variable that stores the articles
       article: articles,
     }
     );

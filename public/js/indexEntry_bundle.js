@@ -46,20 +46,23 @@
 
 	'use strict';
 
-	// this ajax request gets all the knowledge base articles from salesforce
-	// see routes for /json for how
+	// this ajax request gets all the top contributors to the kb from salesforce
+	// see routes for /contributors for how
 	$.ajax({
-	  url: '/contributors', // This URL is for Json file
+	  url: '/contributors',
 	  type: 'GET',
 	  dataType: 'json',
-	  // get returns all entries from kb
+	  // get returns top contributors
 	  success: function success(data) {
-	    console.log(data);
+	    // for each contributor...
 	    for (var cont in data) {
+	      // for in safe-guard
 	      if ({}.hasOwnProperty.call(data, cont)) {
+	        // append the list of contributors
 	        $('#contributors').append('<tr>\n          <td>' + cont + '</td>\n          <td>' + data[cont] + '</td>\n        </tr>');
 	      }
 	    }
+	    // Now we have ajax, init datatable, sort by contributions
 	    $('#top_cont').DataTable({
 	      order: [1, 'desc'],
 	      sDom: ''
@@ -70,14 +73,18 @@
 	  }
 	});
 
+	// this ajax request gets the most popular articles in the kb from salesforce
+	// see routes for /popular for how
 	$.ajax({
-	  url: '/popular', // This URL is for Json file
+	  url: '/popular',
 	  type: 'GET',
 	  dataType: 'json',
 
 	  success: function success(data) {
-	    console.log(data);
+	    // data is the popular articles
+	    // for each popular article...
 	    data.forEach(function (article) {
+	      // append the list of popular articles
 	      $('#popular_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n      <h4 class="list-group-item-heading">' + article.title + '</h4>\n      <p class="list-group-item-text">By ' + article.author + '</p>\n      </a>');
 	    });
 	  },

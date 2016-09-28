@@ -8,6 +8,7 @@
 "globals": {
   "SimpleMDE" : true,
   "lunr" : true,
+  "DataTable" : true,
 },
 "rules": {
      "no-console": 0
