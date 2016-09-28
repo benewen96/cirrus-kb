@@ -26,3 +26,25 @@ $.ajax({
         // hopefully nothing here :)
   },
 });
+
+
+$.ajax({
+  url: '/popular', // This URL is for Json file
+  type: 'GET',
+  dataType: 'json',
+
+  success(data) {
+    console.log(data);
+    data.forEach((article) => {
+      $('#popular_articles').append(
+      `<a href="/browse/${article.id}" class="list-group-item">
+      <h4 class="list-group-item-heading">${article.title}</h4>
+      <p class="list-group-item-text">By ${article.author}</p>
+      </a>`
+      );
+    });
+  },
+  error() {
+        // hopefully nothing here :)
+  },
+});

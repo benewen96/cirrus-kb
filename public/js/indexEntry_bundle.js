@@ -70,5 +70,21 @@
 	  }
 	});
 
+	$.ajax({
+	  url: '/popular', // This URL is for Json file
+	  type: 'GET',
+	  dataType: 'json',
+
+	  success: function success(data) {
+	    console.log(data);
+	    data.forEach(function (article) {
+	      $('#popular_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n      <h4 class="list-group-item-heading">' + article.title + '</h4>\n      <p class="list-group-item-text">By ' + article.author + '</p>\n      </a>');
+	    });
+	  },
+	  error: function error() {
+	    // hopefully nothing here :)
+	  }
+	});
+
 /***/ }
 /******/ ]);

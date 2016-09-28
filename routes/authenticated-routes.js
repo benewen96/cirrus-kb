@@ -136,7 +136,7 @@ router.get('/popular', (req, res) => {
   // array of json for contributors
   const pop = [];
 
-  conn.query('SELECT Views__c, Title__c, Id FROM CRKB_Entry__c ORDER BY Views__c DESC NULLS LAST LIMIT 3', (err, result) => {
+  conn.query('SELECT Views__c, Title__c, Id , Author__c FROM CRKB_Entry__c ORDER BY Views__c DESC NULLS LAST LIMIT 3', (err, result) => {
     if (err) { return console.error(err); }
     console.log(`total : ${result.totalSize}`);
     console.log(`fetched : ${result.records.length}`);
@@ -146,6 +146,7 @@ router.get('/popular', (req, res) => {
       pop.push({
         title: record.Title__c,
         id: record.Id,
+        author: record.Author__c,
       });
     });
 

@@ -2,28 +2,35 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
 
 <div class='container'>
-<h4> Welcome to the Cirrus knowledge base</h4>
+  <h4> Welcome to the Cirrus knowledge base</h4>
 
-<div class="alert alert-success alert-dismissable">
-  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-  <h4>Go and contribute!</h4>
-  <p>You can get started by reading the manual for the Cirrus knowledge base.</p>
-  <p><a class="btn btn-success" href="/browse/a000Y000001N4yNQAS">Lets go!</a></p>
-</div>
+  <div class="alert alert-success alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4>Go and contribute!</h4>
+    <p>You can get started by reading the manual for the Cirrus knowledge base.</p>
+    <p><a class="btn btn-success" href="/browse/a000Y000001N4yNQAS">Lets go!</a></p>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Top Contributors</div>
+    <table id='top_cont' class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Articles</th>
+        </tr>
+      </thead>
+      <tbody id='contributors'>
+      </tbody>
+    </table>
+  </div>
 
 <div class="panel panel-default">
-  <div class="panel-heading">Top Contributors</div>
-  <table id='top_cont' class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Articles</th>
-      </tr>
-    </thead>
-    <tbody id='contributors'>
-    </tbody>
-  </table>
-</div>
+  <div class="panel-heading">Popular Articles</div>
+  <div class="list-group" id='popular_articles'>
+  </div>
 </div>
 
+
+</div>
 <script src='/js/indexEntry_bundle.js'></script>
