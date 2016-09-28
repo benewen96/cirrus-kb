@@ -54,10 +54,22 @@ router.post('/create', (req, res) => {
 
 // get the article with the following id
 router.get('/browse/:kbId', (req, res) => {
+  let currentViews;
   // retrieve the entry from salesforce with the id from the url
   conn.sobject('CRKB_Entry__c').retrieve(req.params.kbId, (err, entry) => {
     if (err) { return console.error(err); }
     // returns the browseArticle handlebars page
+    currentViews = entry.Views__c;
+    console.log(`current: ${entry.Views__c}`);
+    conn.sobject('CRKB_Entry__c').update({
+      Id: req.params.kbId,
+      Views__c: currentViews + 1,
+    }, (err2, ret) => {
+      if (err2 || !ret.success) { return console.error(err, ret); }
+      console.log(`Updated Successfully : ${ret.id}`);
+      return ret;
+    });
+
     return res.render('browseArticle', {
       helpers: {
         // handlebars helper functions to retrieve the id and
