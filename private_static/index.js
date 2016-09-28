@@ -1,3 +1,29 @@
+// *** PRELOADER ***
+let loadingStatus = 0;
+$(document)
+  .ajaxStart(() => {
+    console.log('ajaxing...');
+    // $('#mainContainer').hide();
+    $('#top_cont').hide();
+    $('#popular_articles').hide();
+  })
+  .ajaxStop(() => {
+    console.log('ajaxed!');
+    $('#loadingbar').attr('style', 'width: 100%');
+    $('#loading').slideUp(600, () => {
+      // $('#mainContainer').fadeIn('slow');
+
+    });
+    $('#popular_articles').fadeIn('slow');
+    $('#top_cont').fadeIn('slow');
+  })
+  .ajaxComplete(() => {
+    loadingStatus += 20;
+    console.log(loadingStatus);
+    $('#loadingbar').attr('style', `width: ${loadingStatus}%`);
+  });
+//* * END **/
+
 // this ajax request gets all the top contributors to the kb from salesforce
 // see routes for /contributors for how
 $.ajax({
