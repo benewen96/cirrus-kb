@@ -56,7 +56,7 @@
 	  success: function success(data) {
 	    console.log(data);
 	    data.forEach(function (article) {
-	      $('#popular').append('<dd class=\'nav-item\'><a href=\'' + article.id + '\'</a>' + article.title + '</dd>');
+	      $('#popular').append('<dd class=\'nav-item\'><a href=\'/browse/' + article.id + '\'</a>' + article.title + '</dd>');
 	    });
 	  },
 	  error: function error() {

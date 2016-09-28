@@ -9,7 +9,7 @@ $.ajax({
     console.log(data);
     data.forEach((article) => {
       $('#popular').append(
-      `<dd class='nav-item'><a href='${article.id}'</a>${article.title}</dd>`
+      `<dd class='nav-item'><a href='/browse/${article.id}'</a>${article.title}</dd>`
       );
     });
   },
