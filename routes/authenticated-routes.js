@@ -30,10 +30,11 @@ router.use((req, res, next) => {
 // }
 
 // returns create handlebars page
-router.get('/create', (req, res) => res.render('create'));
+router.get('/', (req, res) => res.render('index'));
 
 // returns create handlebars page
-router.get('/', (req, res) => res.render('create'));
+router.get('/create', (req, res) => res.render('create'));
+
 
 /* When we get a POST request on create, use body-parser to retrieve
 the markdown submitted then create a new kb article and send to salesforce
@@ -93,6 +94,50 @@ router.get('/json', (req, res) => {
     // return the json object to whoever requested it
     // this is used in browse.js to get all the entries but could be used to export kb data
     return res.json(articles);
+  });
+});
+
+// return list of contributors and how many articles they've wrote
+router.get('/contributors', (req, res) => {
+  // array of json for contributors
+  const contributors = {};
+
+  conn.query('SELECT Author__c FROM CRKB_Entry__c', (err, result) => {
+    if (err) { return console.error(err); }
+    console.log(`total : ${result.totalSize}`);
+    console.log(`fetched : ${result.records.length}`);
+
+    // for each record from the query, add it to the articles json
+    result.records.forEach((record) => {
+      if (!contributors[record.Author__c]) {
+        contributors[record.Author__c] = 0;
+      }
+      contributors[record.Author__c] += 1;
+    });
+
+    return res.json(contributors);
+  });
+});
+
+// return list of top articles and how many articles they've wrote
+router.get('/popular', (req, res) => {
+  // array of json for contributors
+  const pop = [];
+
+  conn.query('SELECT Views__c, Title__c, Id FROM CRKB_Entry__c ORDER BY Views__c DESC NULLS LAST LIMIT 3', (err, result) => {
+    if (err) { return console.error(err); }
+    console.log(`total : ${result.totalSize}`);
+    console.log(`fetched : ${result.records.length}`);
+
+    // for each record from the query, add it to the articles json
+    result.records.forEach((record) => {
+      pop.push({
+        title: record.Title__c,
+        id: record.Id,
+      });
+    });
+
+    return res.json(pop);
   });
 });
 

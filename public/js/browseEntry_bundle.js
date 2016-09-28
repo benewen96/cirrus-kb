@@ -89,7 +89,7 @@
 	  url: '/json', // This URL is for Json file
 	  type: 'GET',
 	  dataType: 'json',
-	  // post returns all entries from kb
+	  // get returns all entries from kb
 	  success: function success(data) {
 	    // for each kb entry
 	    data.forEach(function (entry) {
