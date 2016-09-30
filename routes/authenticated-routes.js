@@ -52,6 +52,20 @@ router.post('/create', (req, res) => {
   });
 });
 
+// update the article
+router.post('/update', (req, res) => {
+  conn.sobject('CRKB_Entry__c').update({
+    Title__c: req.body.title,
+    Article__c: req.body.markdown,
+    Author__c: req.body.author,
+  }, (err, ret) => {
+    if (err || !ret.success) { return console.error(err, ret); }
+    console.log(`Updated Successfully : ${ret.id}`);
+    // return the success object back to ajax for id of record
+    return res.send(ret);
+  });
+});
+
 // get the article with the following id
 router.get('/browse/:kbId', (req, res) => {
   let currentViews;
@@ -75,6 +89,7 @@ router.get('/browse/:kbId', (req, res) => {
         // handlebars helper functions to retrieve the id and
         // (markdown rendered into html) content of an article
         article() { return new Handlebars.SafeString(md.render(entry.Article__c)); },
+        rawArticle() { return new Handlebars.SafeString(entry.Article__c); },
         name() { return new Handlebars.SafeString(entry.Title__c); },
         author() { return new Handlebars.SafeString(entry.Author__c); },
         url() { return new Handlebars.SafeString(`https://eu11.salesforce.com/${entry.Id}`); },

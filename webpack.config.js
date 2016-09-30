@@ -18,6 +18,7 @@ module.exports = {
     createEntry: './private_static/create.js',
     indexEntry: './private_static/index.js',
     popularEntry: './private_static/popular.js',
+    updateEntry: './private_static/update.js',
   },
   output: {
     path: 'public/js',
