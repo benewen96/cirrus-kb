@@ -49,6 +49,7 @@
 	// tell lunr our data model
 	var articles = lunr(function construct() {
 	  this.field('title', { boost: 10 });
+	  this.field('category', { boost: 7 });
 	  this.field('author');
 	  this.field('article');
 	  this.ref('id');
@@ -57,20 +58,76 @@
 	// store is a key value storage to get articles in O(1) time
 	var store = {};
 
+	showCategories();
+
+	// this ajax request gets the most popular articles in the kb from salesforce
+	// see routes for /popular for how
+	function showCategories() {
+	  $('#article_list').empty();
+	  $.ajax({
+	    url: '/json',
+	    type: 'GET',
+	    dataType: 'json',
+
+	    success: function success(data) {
+	      var _loop = function _loop(category) {
+	        // for in guard
+	        if ({}.hasOwnProperty.call(data.categories, category)) {
+	          $('#article_list').append('\n          <div class="panel panel-default">\n            <div class="panel-heading">' + category + '</div>\n            <div class="list-group" id=\'' + category + '_articles\'>\n            </div>\n          </div>\n          ');
+
+	          $.ajax({
+	            url: '/category/' + category,
+	            type: 'GET',
+	            dataType: 'json',
+
+	            success: function success(results) {
+	              results.forEach(function (article) {
+	                $('#' + category + '_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n                <h4 class="list-group-item-heading">' + article.title + '</h4>\n                <p class="list-group-item-text">By ' + article.author + '</p>\n                <p class="list-group-item-text"><i>' + article.category + '</i></p>\n                </a>');
+	              });
+	            }
+	          });
+	        }
+	      };
+
+	      // data is the popular articles
+	      // for each popular article...
+	      for (var category in data.categories) {
+	        _loop(category);
+	      }
+
+	      // for each kb entry
+	      data.articles.forEach(function (entry) {
+	        // add each entry into the lunr engine for tokenisation and indexing
+	        articles.add({
+	          id: entry.id,
+	          title: entry.title,
+	          author: entry.author,
+	          article: entry.article,
+	          category: entry.category
+	        });
+	        // to be able to get O(1) lookup, add each entry to store object with id
+	        // means if we know id from lunr, can go store[id] to get entry instantly
+	        store[entry.id] = {
+	          id: entry.id,
+	          title: entry.title,
+	          author: entry.author,
+	          article: entry.article,
+	          time: entry.time,
+	          category: entry.category
+	        };
+	      });
+	    },
+	    error: function error() {
+	      // hopefully nothing here :)
+	    }
+	  });
+	}
+
 	// if the search fields input changes (i.e. someone typed in it)
 	$('#searchfield').on('keyup change', function () {
 	  // if the value is empty, clear and show the original list
 	  if ($('#searchfield').val() === '') {
-	    $('#article_list').empty();
-	    // for...in lets us iterate over an enumerable property
-	    // this is because store isn't an array (due to wanting to access in O(1))
-	    for (var article in store) {
-	      // for in guard
-	      if ({}.hasOwnProperty.call(store, article)) {
-	        // append the article list with each entry
-	        $('#article_list').append('<a href="/browse/' + store[article].id + '" class="list-group-item">\n          <h4 class="list-group-item-heading">' + store[article].title + '</h4>\n          <p class="list-group-item-text">By ' + store[article].author + '</p>\n          </a>');
-	      }
-	    }
+	    showCategories();
 	  } else {
 	    $('#article_list').empty();
 	    // lunr will search all articles for the current search value
@@ -78,41 +135,8 @@
 	    // for each search result
 	    res.forEach(function (result) {
 	      // append the article list with each entry
-	      $('#article_list').append('<a href="/browse/' + store[result.ref].id + '" class="list-group-item">\n        <h4 class="list-group-item-heading">' + store[result.ref].title + '</h4>\n        <p class="list-group-item-text">By ' + store[result.ref].author + '</p>\n        </a>');
+	      $('#article_list').append('<a id="' + store[result.ref].id + '"href="/browse/' + store[result.ref].id + '" class="list-group-item">\n        <h4 class="list-group-item-heading">' + store[result.ref].title + '</h4>\n        <p class="list-group-item-text"><i>' + store[result.ref].category + '</i></p>\n        <p class="list-group-item-text">By ' + store[result.ref].author + '</p>\n        </a>');
 	    });
-	  }
-	});
-
-	// this ajax request gets all the knowledge base articles from salesforce
-	// see routes for /json for how
-	$.ajax({
-	  url: '/json', // This URL is for Json file
-	  type: 'GET',
-	  dataType: 'json',
-	  // get returns all entries from kb
-	  success: function success(data) {
-	    // for each kb entry
-	    data.forEach(function (entry) {
-	      // add each entry into the lunr engine for tokenisation and indexing
-	      articles.add({
-	        id: entry.id,
-	        title: entry.title,
-	        author: entry.author,
-	        article: entry.article
-	      });
-	      // to be able to get O(1) lookup, add each entry to store object with id
-	      // means if we know id from lunr, can go store[id] to get entry instantly
-	      store[entry.id] = {
-	        id: entry.id,
-	        title: entry.title,
-	        author: entry.author,
-	        article: entry.article,
-	        time: entry.time
-	      };
-	    });
-	  },
-	  error: function error() {
-	    // hopefully nothing here :)
 	  }
 	});
 

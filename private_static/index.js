@@ -72,6 +72,7 @@ $.ajax({
       `<a href="/browse/${article.id}" class="list-group-item">
       <h4 class="list-group-item-heading">${article.title}</h4>
       <p class="list-group-item-text">By ${article.author}</p>
+      <p class="list-group-item-text"><i>${article.category}</i></p>
       </a>`
       );
     });

@@ -53,34 +53,7 @@ router.post('/create', (req, res) => {
 });
 
 // browse all articles
-router.get('/browse', (req, res) => {
-  // articles is an array of json articles from sf
-  const articles = [];
-
-  // query salesforce for all articles
-  conn.query('SELECT Id, Title__c, Author__c, Article__c, CreatedDate FROM CRKB_Entry__c', (err, result) => {
-    if (err) { return console.error(err); }
-    console.log(`total : ${result.totalSize}`);
-    console.log(`fetched : ${result.records.length}`);
-
-    // for each record from the query, add it to the articles json
-    result.records.forEach((record) => {
-      articles.push({
-        id: record.Id,
-        title: record.Title__c,
-        author: record.Author__c,
-        time: record.CreatedDate,
-      });
-    });
-
-    // return the browse handlebars page and pass the articles json to be iterated by #each helper
-    return res.render('browse', {
-      // handlebars variable that stores the articles
-      article: articles,
-    }
-    );
-  });
-});
+router.get('/browse', (req, res) => res.render('browse'));
 
 // get the article with the following id
 router.get('/browse/:kbId', (req, res) => {
@@ -152,26 +125,40 @@ router.get('/update/:kbId', (req, res) => {
 // this endpoint returns the entire kb in a json object
 router.get('/json', (req, res) => {
   // articles is an array of json articles from sf
+
   const articles = [];
+  const categories = {};
   // query salesforce for all articles
-  conn.query('SELECT Id, Title__c, Author__c, Article__c, CreatedDate FROM CRKB_Entry__c', (err, result) => {
+  conn.query('SELECT Id, Title__c, Author__c, Article__c, CreatedDate, Category__c FROM CRKB_Entry__c', (err, result) => {
     if (err) { return console.error(err); }
     console.log(`total : ${result.totalSize}`);
     console.log(`fetched : ${result.records.length}`);
 
     // for each record from the query, add it to the articles json
     result.records.forEach((record) => {
+      if (record.Category__c !== null) {
+        if (!categories[record.Category__c]) {
+          categories[record.Category__c] = [];
+        }
+        categories[record.Category__c].push(record.Id);
+      }
       articles.push({
         id: record.Id,
         title: record.Title__c,
         author: record.Author__c,
         article: record.Article__c,
+        category: record.Category__c,
         time: record.CreatedDate,
       });
     });
     // return the json object to whoever requested it
     // this is used in browse.js to get all the entries but could be used to export kb data
-    return res.json(articles);
+
+    const ret = {
+      categories,
+      articles,
+    };
+    return res.json(ret);
   });
 });
 
@@ -206,7 +193,7 @@ router.get('/popular', (req, res) => {
   const pop = [];
 
 // query salesforce for articles ordered by views return max 3 in desc order
-  conn.query('SELECT Views__c, Title__c, Id , Author__c FROM CRKB_Entry__c ORDER BY Views__c DESC NULLS LAST LIMIT 3', (err, result) => {
+  conn.query('SELECT Views__c, Title__c, Id , Author__c, Category__c FROM CRKB_Entry__c ORDER BY Views__c DESC NULLS LAST LIMIT 3', (err, result) => {
     if (err) { return console.error(err); }
     console.log(`total : ${result.totalSize}`);
     console.log(`fetched : ${result.records.length}`);
@@ -217,10 +204,30 @@ router.get('/popular', (req, res) => {
         title: record.Title__c,
         id: record.Id,
         author: record.Author__c,
+        category: record.Category__c,
       });
     });
 
     return res.json(pop);
+  });
+});
+
+// return list of top authors and how many articles they've wrote
+router.get('/category/:cat', (req, res) => {
+  const result = [];
+  conn.query('SELECT Views__c, Title__c, Id , Author__c, Category__c FROM CRKB_Entry__c', (err, ret) => {
+    if (err) { return console.error(err); }
+    ret.records.forEach((record) => {
+      if (record.Category__c === req.params.cat) {
+        result.push({
+          title: record.Title__c,
+          id: record.Id,
+          author: record.Author__c,
+          category: record.Category__c,
+        });
+      }
+    });
+    return res.send(result);
   });
 });
 

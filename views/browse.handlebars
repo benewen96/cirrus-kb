@@ -17,18 +17,7 @@
   </div>
 
   <div class='row'>
-    <div class="list-group" id='article_list'>
-      {{#each article}}
-        <a href="/browse/{{this.id}}" class="list-group-item">
-        <h4 class="list-group-item-heading">{{this.title}}</h4>
-        <p class="list-group-item-text">By {{this.author}}</p>
-        </a>
-      {{else}}
-      <a href="/browse/{{this.id}}" class="list-group-item">
-      <h4 class="list-group-item-heading">The knowledge base is empty :(</h4>
-      <p class="list-group-item-text"></p>
-      </a>
-      {{/each}}
+    <div id='article_list'>
     </div>
   </div>
 </div>

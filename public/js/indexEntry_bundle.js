@@ -108,7 +108,7 @@
 	    // for each popular article...
 	    data.forEach(function (article) {
 	      // append the list of popular articles
-	      $('#popular_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n      <h4 class="list-group-item-heading">' + article.title + '</h4>\n      <p class="list-group-item-text">By ' + article.author + '</p>\n      </a>');
+	      $('#popular_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n      <h4 class="list-group-item-heading">' + article.title + '</h4>\n      <p class="list-group-item-text">By ' + article.author + '</p>\n      <p class="list-group-item-text"><i>' + article.category + '</i></p>\n      </a>');
 	    });
 	  },
 	  error: function error() {
