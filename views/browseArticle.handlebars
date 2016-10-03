@@ -1,6 +1,6 @@
 <div class="container">
   <h2>{{name}}</h2>
-  <h4>By {{author}} <span id='edit' class="badge badge-warning">Edit</span> </h4>
+  <h4>By {{author}} <span id='edit' onclick="window.location.href='/update/{{id}}'" class="badge badge-warning">Edit</span>  </h4>
   <div id='article' class="jumbotron">
     <div class="jumbotron-contents">
       {{article}}
@@ -10,5 +10,3 @@
   <button type="button" onclick="window.location.href='/browse'" class="btn btn-danger">Back</button>
   <button id='salesforce' type="button" onclick="" class="btn btn-danger">View on Salesforce</button>
 </div>
-
-<script src='/js/updateEntry_bundle.js'></script>

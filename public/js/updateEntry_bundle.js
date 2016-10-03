@@ -46,25 +46,61 @@
 
 	'use strict';
 
-	$('#salesforce').on('click', function () {
-	  window.open('{{url}}');
+	// create a new markdown editor
+	var simplemde = new SimpleMDE({
+	  element: $('#mdeditor')[0],
+	  autosave: {
+	    enabled: false
+	  }
 	});
 
-	$('#edit').on('click', function () {
-	  $('#edit').hide();
-	  $('#article').empty();
-	  $('#article').removeAttr('class');
+	// called when user hits save button
+	var save = function save() {
+	  // get markdown from editor
+	  var markdown = simplemde.value();
+	  // wrap user input into json
+	  var jsonData = {
+	    markdown: markdown,
+	    author: $('#author').val(),
+	    title: $('#article_title').val()
+	  };
+	  // make sure we had some markdown to add
+	  if (markdown) {
+	    // update save button and disable it until user edits
+	    $('#save').text('Thanks!');
+	    $('#save').attr('class', 'btn btn-success btn-block disabled');
+	    // send ajax request to /create see routes for more info
+	    $.ajax({
+	      // our endpoint in routes for creating a new record
+	      url: '/update/' + $('#id').text(),
+	      type: 'POST',
+	      // data is a JSON object that will contain our markdown
+	      data: jsonData,
+	      // post request returns success object from jsforce that contains id of record
+	      success: function success(data) {
+	        // now we know record id, redirect user to their article
+	        window.location.replace('/browse/' + data.id);
+	      },
+	      error: function error(data) {
+	        // hopefully nothing here :)
+	        console.log(data);
+	      }
+	    });
+	  }
+	};
 
-	  $('#article').html('<div class=\'row\'>\n\t\t<div class="col-md-6" style=\'padding-bottom:20px\'>\n      <input type="text"  id=\'article_title\' class="form-control" value=\'{{name}}\'>\n    </div>\n\t\t<div class="col-md-6" style=\'padding-bottom:20px\'>\n      <input type="text"  id=\'author\' class="form-control" value="{{author}}">\n    </div>\n  </div>\n\n\n\t\t<!--Text area for markdown editor -->\n\t\t<textarea id=\'mdeditor\'></textarea>\n\n\n\t\t<div class=\'\' style=\'width:20%;float:right;\'>\n\t\t\t<!--Save button -->\n\t\t\t<button id=\'save\' type="button" class="btn btn-normal btn-block">Save</button>\n\t\t</div>\n  ');
-	  // create a new markdown editor
-	  var simplemde = new SimpleMDE({
-	    element: $('#mdeditor')[0],
-	    autosave: {
-	      enabled: false
-	    }
+	$(document).ready(function () {
+	  $('#salesforce').on('click', function () {
+	    window.open($('#url').text());
 	  });
-	  console.log();
-	  simplemde.value('{{rawArticle}}');
+
+	  $('#save').on('click', function () {
+	    save();
+	  });
+
+	  var raw = $('#raw').text();
+
+	  simplemde.value(raw);
 	});
 
 /***/ }

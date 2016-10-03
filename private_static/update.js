@@ -1,40 +1,57 @@
-$('#salesforce').on('click', () => {
-  window.open('{{url}}');
+// create a new markdown editor
+const simplemde = new SimpleMDE({
+  element: $('#mdeditor')[0],
+  autosave: {
+    enabled: false,
+  },
 });
 
-$('#edit').on('click', () => {
-  $('#edit').hide();
-  $('#article').empty();
-  $('#article').removeAttr('class');
+// called when user hits save button
+const save = () => {
+  // get markdown from editor
+  const markdown = simplemde.value();
+  // wrap user input into json
+  const jsonData = {
+    markdown,
+    author: $('#author').val(),
+    title: $('#article_title').val(),
+  };
+  // make sure we had some markdown to add
+  if (markdown) {
+    // update save button and disable it until user edits
+    $('#save').text('Thanks!');
+    $('#save').attr('class', 'btn btn-success btn-block disabled');
+    // send ajax request to /create see routes for more info
+    $.ajax({
+      // our endpoint in routes for creating a new record
+      url: `/update/${$('#id').text()}`,
+      type: 'POST',
+      // data is a JSON object that will contain our markdown
+      data: jsonData,
+      // post request returns success object from jsforce that contains id of record
+      success(data) {
+        // now we know record id, redirect user to their article
+        window.location.replace(`/browse/${data.id}`);
+      },
+      error(data) {
+        // hopefully nothing here :)
+        console.log(data);
+      },
+    });
+  }
+};
 
-  $('#article').html(
-  `<div class='row'>
-		<div class="col-md-6" style='padding-bottom:20px'>
-      <input type="text"  id='article_title' class="form-control" value='{{name}}'>
-    </div>
-		<div class="col-md-6" style='padding-bottom:20px'>
-      <input type="text"  id='author' class="form-control" value="{{author}}">
-    </div>
-  </div>
-
-
-		<!--Text area for markdown editor -->
-		<textarea id='mdeditor'></textarea>
-
-
-		<div class='' style='width:20%;float:right;'>
-			<!--Save button -->
-			<button id='save' type="button" class="btn btn-normal btn-block">Save</button>
-		</div>
-  `
-  );
-  // create a new markdown editor
-  const simplemde = new SimpleMDE({
-    element: $('#mdeditor')[0],
-    autosave: {
-      enabled: false,
-    },
+$(document).ready(() => {
+  $('#salesforce').on('click', () => {
+    window.open($('#url').text());
   });
-  console.log();
-  simplemde.value('{{rawArticle}}');
+
+  $('#save').on('click', () => {
+    save();
+  });
+
+  const raw = $('#raw').text();
+
+
+  simplemde.value(raw);
 });

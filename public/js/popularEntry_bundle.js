@@ -54,7 +54,6 @@
 	  dataType: 'json',
 
 	  success: function success(data) {
-	    console.log(data);
 	    data.forEach(function (article) {
 	      $('#popular').append('<dd class=\'nav-item\'><a href=\'/browse/' + article.id + '\'</a>' + article.title + '</dd>');
 	    });

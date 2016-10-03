@@ -29,7 +29,7 @@ router.use((req, res, next) => {
 //   return `/${route}|${route}.html`;
 // }
 
-// returns create handlebars page
+// returns index handlebars page
 router.get('/', (req, res) => res.render('index'));
 
 // returns create handlebars page
@@ -52,17 +52,33 @@ router.post('/create', (req, res) => {
   });
 });
 
-// update the article
-router.post('/update', (req, res) => {
-  conn.sobject('CRKB_Entry__c').update({
-    Title__c: req.body.title,
-    Article__c: req.body.markdown,
-    Author__c: req.body.author,
-  }, (err, ret) => {
-    if (err || !ret.success) { return console.error(err, ret); }
-    console.log(`Updated Successfully : ${ret.id}`);
-    // return the success object back to ajax for id of record
-    return res.send(ret);
+// browse all articles
+router.get('/browse', (req, res) => {
+  // articles is an array of json articles from sf
+  const articles = [];
+
+  // query salesforce for all articles
+  conn.query('SELECT Id, Title__c, Author__c, Article__c, CreatedDate FROM CRKB_Entry__c', (err, result) => {
+    if (err) { return console.error(err); }
+    console.log(`total : ${result.totalSize}`);
+    console.log(`fetched : ${result.records.length}`);
+
+    // for each record from the query, add it to the articles json
+    result.records.forEach((record) => {
+      articles.push({
+        id: record.Id,
+        title: record.Title__c,
+        author: record.Author__c,
+        time: record.CreatedDate,
+      });
+    });
+
+    // return the browse handlebars page and pass the articles json to be iterated by #each helper
+    return res.render('browse', {
+      // handlebars variable that stores the articles
+      article: articles,
+    }
+    );
   });
 });
 
@@ -93,8 +109,43 @@ router.get('/browse/:kbId', (req, res) => {
         name() { return new Handlebars.SafeString(entry.Title__c); },
         author() { return new Handlebars.SafeString(entry.Author__c); },
         url() { return new Handlebars.SafeString(`https://eu11.salesforce.com/${entry.Id}`); },
+        id() { return new Handlebars.SafeString(entry.Id); },
       },
     });
+  });
+});
+
+// update the article
+router.post('/update/:kbId', (req, res) => {
+  conn.sobject('CRKB_Entry__c').update({
+    Id: req.params.kbId,
+    Title__c: req.body.title,
+    Article__c: req.body.markdown,
+    Author__c: req.body.author,
+  }, (err, ret) => {
+    if (err || !ret.success) { return console.error(err, ret); }
+    console.log(`Updated Successfully : ${ret.id}`);
+    // return the success object back to ajax for id of record
+    return res.send(ret);
+  });
+});
+
+// edit page for an article
+router.get('/update/:kbId', (req, res) => {
+  // query salesforce for this article
+  conn.sobject('CRKB_Entry__c').retrieve(req.params.kbId, (err, entry) => {
+    if (err) { return console.error(err); }
+
+    return res.render('update', {
+      // handlebars helpers to return article info
+      article() { return new Handlebars.SafeString(md.render(entry.Article__c)); },
+      rawArticle() { return new Handlebars.SafeString(entry.Article__c); },
+      name() { return new Handlebars.SafeString(entry.Title__c); },
+      author() { return new Handlebars.SafeString(entry.Author__c); },
+      url() { return new Handlebars.SafeString(`https://eu11.salesforce.com/${entry.Id}`); },
+      id() { return new Handlebars.SafeString(entry.Id); },
+    }
+    );
   });
 });
 
@@ -170,36 +221,6 @@ router.get('/popular', (req, res) => {
     });
 
     return res.json(pop);
-  });
-});
-
-// browse all articles
-router.get('/browse', (req, res) => {
-  // articles is an array of json articles from sf
-  const articles = [];
-
-  // query salesforce for all articles
-  conn.query('SELECT Id, Title__c, Author__c, Article__c, CreatedDate FROM CRKB_Entry__c', (err, result) => {
-    if (err) { return console.error(err); }
-    console.log(`total : ${result.totalSize}`);
-    console.log(`fetched : ${result.records.length}`);
-
-    // for each record from the query, add it to the articles json
-    result.records.forEach((record) => {
-      articles.push({
-        id: record.Id,
-        title: record.Title__c,
-        author: record.Author__c,
-        time: record.CreatedDate,
-      });
-    });
-
-    // return the browse handlebars page and pass the articles json to be iterated by #each helper
-    return res.render('browse', {
-      // handlebars variable that stores the articles
-      article: articles,
-    }
-    );
   });
 });
 
