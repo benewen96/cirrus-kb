@@ -55,48 +55,44 @@
 	  this.ref('id');
 	});
 
-	showCategories();
+	var store = {};
+	var categories = [];
 
-	// this ajax request gets the most popular articles in the kb from salesforce
-	// see routes for /popular for how
-	function showCategories() {
-	  // store is a key value storage to get articles in O(1) time
-	  var store = {};
+	getKnowledgeBase();
+
+	function getCategory(callback, category) {
+	  $.ajax({
+	    url: '/category/' + category,
+	    type: 'GET',
+	    dataType: 'json',
+
+	    success: function success(data) {
+	      callback(data);
+	    }
+	  });
+	}
+
+	function renderCategories() {
+	  console.log(categories);
 	  $('#article_list').empty();
+	  categories.forEach(function (category) {
+	    $('#article_list').append('\n       <div class="panel panel-default">\n         <div class="panel-heading">' + category + '</div>\n         <div class="list-group" id=\'' + category + '_articles\'>\n         </div>\n       </div>\n       ');
+
+	    getCategory(function (data) {
+	      data.forEach(function (article) {
+	        $('#' + article.category + '_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n           <h4 class="list-group-item-heading">' + article.title + '</h4>\n           <p class="list-group-item-text">By ' + article.author + '</p>\n           <p class="list-group-item-text"><i>' + article.category + '</i></p>\n         </a>');
+	      });
+	    }, category);
+	  });
+	}
+
+	function getKnowledgeBase() {
 	  $.ajax({
 	    url: '/json',
 	    type: 'GET',
 	    dataType: 'json',
 
 	    success: function success(data) {
-	      $('#article_list').empty();
-	      // data is the popular articles
-	      // for each popular article...
-
-	      var _loop = function _loop(category) {
-	        // for in guard
-	        if ({}.hasOwnProperty.call(data.categories, category)) {
-	          $('#article_list').append('\n          <div class="panel panel-default">\n            <div class="panel-heading">' + category + '</div>\n            <div class="list-group" id=\'' + category + '_articles\'>\n            </div>\n          </div>\n          ');
-
-	          $.ajax({
-	            url: '/category/' + category,
-	            type: 'GET',
-	            dataType: 'json',
-
-	            success: function success(results) {
-	              $('#' + category + '_articles').empty();
-	              results.forEach(function (article) {
-	                $('#' + category + '_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n                <h4 class="list-group-item-heading">' + article.title + '</h4>\n                <p class="list-group-item-text">By ' + article.author + '</p>\n                <p class="list-group-item-text"><i>' + article.category + '</i></p>\n                </a>');
-	              });
-	            }
-	          });
-	        }
-	      };
-
-	      for (var category in data.categories) {
-	        _loop(category);
-	      }
-
 	      // for each kb entry
 	      data.articles.forEach(function (entry) {
 	        // add each entry into the lunr engine for tokenisation and indexing
@@ -118,6 +114,10 @@
 	          category: entry.category
 	        };
 	      });
+	      for (var category in data.categories) {
+	        categories.push(category);
+	      }
+	      renderCategories();
 	    },
 	    error: function error() {
 	      // hopefully nothing here :)
@@ -125,21 +125,28 @@
 	  });
 	}
 
+	function rerender() {
+	  $('#article_list').empty();
+	  // data is the popular articles
+	  // for each popular article...
+
+
+	  // lunr will search all articles for the current search value
+	  var res = articles.search($('#searchfield').val());
+	  // for each search result
+	  res.forEach(function (result) {
+	    // append the article list with each entry
+	    $('#article_list').append('<a id="' + store[result.ref].id + '"href="/browse/' + store[result.ref].id + '" class="list-group-item">\n    <h4 class="list-group-item-heading">' + store[result.ref].title + '</h4>\n    <p class="list-group-item-text"><i>' + store[result.ref].category + '</i></p>\n    <p class="list-group-item-text">By ' + store[result.ref].author + '</p>\n    </a>');
+	  });
+	}
+
 	// if the search fields input changes (i.e. someone typed in it)
 	$('#searchfield').on('keyup', function () {
-	  $('#article_list').empty();
-	  // if the value is empty, clear and show the original list
 	  if ($('#searchfield').val() === '') {
-	    showCategories();
+	    console.log('empty!');
+	    renderCategories();
 	  } else {
-	    $('#article_list').empty();
-	    // lunr will search all articles for the current search value
-	    var res = articles.search($('#searchfield').val());
-	    // for each search result
-	    res.forEach(function (result) {
-	      // append the article list with each entry
-	      $('#article_list').append('<a id="' + store[result.ref].id + '"href="/browse/' + store[result.ref].id + '" class="list-group-item">\n        <h4 class="list-group-item-heading">' + store[result.ref].title + '</h4>\n        <p class="list-group-item-text"><i>' + store[result.ref].category + '</i></p>\n        <p class="list-group-item-text">By ' + store[result.ref].author + '</p>\n        </a>');
-	    });
+	    rerender();
 	  }
 	});
 
