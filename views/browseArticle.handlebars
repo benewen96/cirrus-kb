@@ -8,5 +8,12 @@
   </div>
 
   <button type="button" onclick="window.location.href='/browse'" class="btn btn-danger">Back</button>
-  <button id='salesforce' type="button" onclick="" class="btn btn-danger">View on Salesforce</button>
+  <button id='salesforce' type="button" class="btn btn-danger">View on Salesforce</button>
 </div>
+
+<script>
+// has to be here to open link in new tab
+$("#salesforce").on("click",function(){
+    window.open('{{url}}');
+});
+</script>

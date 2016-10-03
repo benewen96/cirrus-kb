@@ -95,6 +95,10 @@
 	};
 
 	$(document).ready(function () {
+	  $('#salesforce').on('click', function () {
+	    window.open($('#url').text());
+	  });
+
 	  // if the markdown has been edited, allow the user to save
 	  simplemde.codemirror.on('change', function () {
 	    $('#save').text('Save');

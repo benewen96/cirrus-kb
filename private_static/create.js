@@ -47,6 +47,10 @@ const save = () => {
 };
 
 $(document).ready(() => {
+  $('#salesforce').on('click', () => {
+    window.open($('#url').text());
+  });
+
   // if the markdown has been edited, allow the user to save
   simplemde.codemirror.on('change', () => {
     $('#save').text('Save');
