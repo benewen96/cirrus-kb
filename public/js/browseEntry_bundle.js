@@ -55,14 +55,13 @@
 	  this.ref('id');
 	});
 
-	// store is a key value storage to get articles in O(1) time
-	var store = {};
-
 	showCategories();
 
 	// this ajax request gets the most popular articles in the kb from salesforce
 	// see routes for /popular for how
 	function showCategories() {
+	  // store is a key value storage to get articles in O(1) time
+	  var store = {};
 	  $('#article_list').empty();
 	  $.ajax({
 	    url: '/json',
@@ -70,6 +69,10 @@
 	    dataType: 'json',
 
 	    success: function success(data) {
+	      $('#article_list').empty();
+	      // data is the popular articles
+	      // for each popular article...
+
 	      var _loop = function _loop(category) {
 	        // for in guard
 	        if ({}.hasOwnProperty.call(data.categories, category)) {
@@ -81,6 +84,7 @@
 	            dataType: 'json',
 
 	            success: function success(results) {
+	              $('#' + category + '_articles').empty();
 	              results.forEach(function (article) {
 	                $('#' + category + '_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n                <h4 class="list-group-item-heading">' + article.title + '</h4>\n                <p class="list-group-item-text">By ' + article.author + '</p>\n                <p class="list-group-item-text"><i>' + article.category + '</i></p>\n                </a>');
 	              });
@@ -89,8 +93,6 @@
 	        }
 	      };
 
-	      // data is the popular articles
-	      // for each popular article...
 	      for (var category in data.categories) {
 	        _loop(category);
 	      }
@@ -124,7 +126,8 @@
 	}
 
 	// if the search fields input changes (i.e. someone typed in it)
-	$('#searchfield').on('keyup change', function () {
+	$('#searchfield').on('keyup', function () {
+	  $('#article_list').empty();
 	  // if the value is empty, clear and show the original list
 	  if ($('#searchfield').val() === '') {
 	    showCategories();

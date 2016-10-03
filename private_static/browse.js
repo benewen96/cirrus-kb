@@ -7,15 +7,13 @@ const articles = lunr(function construct() {
   this.ref('id');
 });
 
-// store is a key value storage to get articles in O(1) time
-const store = {};
-
-
 showCategories();
 
 // this ajax request gets the most popular articles in the kb from salesforce
 // see routes for /popular for how
 function showCategories() {
+  // store is a key value storage to get articles in O(1) time
+  const store = {};
   $('#article_list').empty();
   $.ajax({
     url: '/json',
@@ -23,6 +21,7 @@ function showCategories() {
     dataType: 'json',
 
     success(data) {
+      $('#article_list').empty();
       // data is the popular articles
       // for each popular article...
       for (const category in data.categories) {
@@ -42,6 +41,7 @@ function showCategories() {
             dataType: 'json',
 
             success(results) {
+              $(`#${category}_articles`).empty();
               results.forEach((article) => {
                 $(`#${category}_articles`).append(
                 `<a href="/browse/${article.id}" class="list-group-item">
@@ -86,7 +86,8 @@ function showCategories() {
 
 // if the search fields input changes (i.e. someone typed in it)
 $('#searchfield')
-  .on('keyup change', () => {
+  .on('keyup', () => {
+    $('#article_list').empty();
     // if the value is empty, clear and show the original list
     if ($('#searchfield').val() === '') {
       showCategories();
