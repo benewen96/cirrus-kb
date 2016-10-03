@@ -9,7 +9,28 @@ const articles = lunr(function construct() {
 
 const store = {};
 const categories = [];
+// *** PRELOADER ***
+let loadingStatus = 0;
+$(document)
+  .ajaxStart(() => {
+    console.log('ajaxing...');
+    // $('#mainContainer').hide();
+    $('[id$=_articles]').hide();
+  })
+  .ajaxStop(() => {
+    console.log('ajaxed!');
+    $('#loadingbar').attr('style', 'width: 100%');
+    $('#loading').slideUp(600, () => {
+      // $('#mainContainer').fadeIn('slow');
 
+    });
+  })
+  .ajaxComplete(() => {
+    loadingStatus += 20;
+    console.log(loadingStatus);
+    $('#loadingbar').attr('style', `width: ${loadingStatus}%`);
+  });
+//* * END **/
 
 getKnowledgeBase();
 
@@ -22,6 +43,7 @@ function getCategory(callback, category) {
 
     success(data) {
       callback(data);
+      $('[id$=_articles]').fadeIn('slow');
     },
   });
 }
@@ -47,6 +69,7 @@ function renderCategories() {
            <p class="list-group-item-text"><i>${article.category}</i></p>
          </a>`
          );
+        $(`#${article.category}_articles`).hide();
       });
     }, category);
   });

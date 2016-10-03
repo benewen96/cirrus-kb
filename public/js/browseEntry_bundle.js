@@ -57,6 +57,25 @@
 
 	var store = {};
 	var categories = [];
+	// *** PRELOADER ***
+	var loadingStatus = 0;
+	$(document).ajaxStart(function () {
+	  console.log('ajaxing...');
+	  // $('#mainContainer').hide();
+	  $('[id$=_articles]').hide();
+	}).ajaxStop(function () {
+	  console.log('ajaxed!');
+	  $('#loadingbar').attr('style', 'width: 100%');
+	  $('#loading').slideUp(600, function () {
+	    // $('#mainContainer').fadeIn('slow');
+
+	  });
+	}).ajaxComplete(function () {
+	  loadingStatus += 20;
+	  console.log(loadingStatus);
+	  $('#loadingbar').attr('style', 'width: ' + loadingStatus + '%');
+	});
+	//* * END **/
 
 	getKnowledgeBase();
 
@@ -68,6 +87,7 @@
 
 	    success: function success(data) {
 	      callback(data);
+	      $('[id$=_articles]').fadeIn('slow');
 	    }
 	  });
 	}
@@ -81,6 +101,7 @@
 	    getCategory(function (data) {
 	      data.forEach(function (article) {
 	        $('#' + article.category + '_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n           <h4 class="list-group-item-heading">' + article.title + '</h4>\n           <p class="list-group-item-text">By ' + article.author + '</p>\n           <p class="list-group-item-text"><i>' + article.category + '</i></p>\n         </a>');
+	        $('#' + article.category + '_articles').hide();
 	      });
 	    }, category);
 	  });
