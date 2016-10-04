@@ -136,11 +136,25 @@ router.get('/json', (req, res) => {
 
     // for each record from the query, add it to the articles json
     result.records.forEach((record) => {
+      // if the category has been specified
       if (record.Category__c !== null) {
-        if (!categories[record.Category__c]) {
-          categories[record.Category__c] = [];
+        // if the record has multiple categories
+        if (record.Category__c.includes(', ')) {
+          // temp array to store split categories
+          const arr = record.Category__c.split(', ');
+          // for each of the multiple categories
+          arr.forEach((cat) => {
+            if (!categories[cat]) {
+              categories[cat] = [];
+            }
+            categories[cat].push(record.Id);
+          });
+        } else {
+          if (!categories[record.Category__c]) {
+            categories[record.Category__c] = [];
+          }
+          categories[record.Category__c].push(record.Id);
         }
-        categories[record.Category__c].push(record.Id);
       }
       articles.push({
         id: record.Id,
