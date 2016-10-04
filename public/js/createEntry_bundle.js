@@ -67,7 +67,8 @@
 	  var jsonData = {
 	    markdown: markdown,
 	    author: $('#author').val(),
-	    title: $('#article_title').val()
+	    title: $('#article_title').val(),
+	    category: $('#category').val()
 	  };
 	  // make sure we had some markdown to add
 	  if (markdown) {
@@ -108,6 +109,63 @@
 	  $('#save').click(function () {
 	    save();
 	  });
+	});
+
+	function split(val) {
+	  return val.split(/,\s*/);
+	}
+	function extractLast(term) {
+	  return split(term).pop();
+	}
+
+	function getCategories(handleData) {
+	  $.ajax({
+	    // our endpoint in routes for creating a new record
+	    url: '/json',
+	    type: 'GET',
+	    // data is a JSON object that will contain our markdown
+	    // post request returns success object from jsforce that contains id of record
+	    success: function success(data) {
+	      handleData(data.categories);
+	    },
+	    error: function error(data) {
+	      // hopefully nothing here :)
+	      console.log(data);
+	    }
+	  });
+	}
+	getCategories(function (categories) {
+	  categories;
+	});
+
+	$('#category')
+	// don't navigate away from the field on tab when selecting an item
+	.on('keydown', function (event) {
+	  console.log('tedf');
+	  if (event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete('instance').menu.active) {
+	    event.preventDefault();
+	  }
+	}).autocomplete({
+	  minLength: 0,
+	  source: function source(request, response) {
+	    // delegate back to autocomplete, but extract the last term
+	    response($.ui.autocomplete.filter(cats, extractLast(request.term)));
+	  },
+	  focus: function focus() {
+	    // prevent value inserted on focus
+	    return false;
+	  },
+	  select: function select(event, ui) {
+	    var terms = split(this.value);
+	    // remove the current input
+	    terms.pop();
+	    // add the selected item
+	    terms.push(ui.item.value);
+	    // add placeholder to get the comma-and-space at the end
+	    terms.push('');
+	    this.value = terms.join(', ');
+	    return false;
+	  }
 	});
 
 /***/ }

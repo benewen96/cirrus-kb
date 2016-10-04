@@ -71,18 +71,6 @@
 
 	getKnowledgeBase();
 
-	function getCategory(callback, category) {
-	  $.ajax({
-	    url: '/category/' + category,
-	    type: 'GET',
-	    dataType: 'json',
-
-	    success: function success(data) {
-	      callback(data);
-	    }
-	  });
-	}
-
 	function renderCategories(categories) {
 	  $('#article_list').empty();
 
@@ -153,7 +141,6 @@
 	// if the search fields input changes (i.e. someone typed in it)
 	$('#searchfield').on('keyup', function () {
 	  if ($('#searchfield').val() === '') {
-	    console.log('empty!');
 	    renderCategories();
 	  } else {
 	    rerender();

@@ -28,19 +28,6 @@ $(document)
 
 getKnowledgeBase();
 
-
-function getCategory(callback, category) {
-  $.ajax({
-    url: `/category/${category}`,
-    type: 'GET',
-    dataType: 'json',
-
-    success(data) {
-      callback(data);
-    },
-  });
-}
-
 function renderCategories(categories) {
   $('#article_list').empty();
 
@@ -127,7 +114,6 @@ function rerender() {
 $('#searchfield')
   .on('keyup', () => {
     if ($('#searchfield').val() === '') {
-      console.log('empty!');
       renderCategories();
     } else {
       rerender();
