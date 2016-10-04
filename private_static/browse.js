@@ -8,25 +8,19 @@ const articles = lunr(function construct() {
 });
 
 const store = {};
+
 // *** PRELOADER ***
 let loadingStatus = 0;
 $(document)
   .ajaxStart(() => {
-    console.log('ajaxing...');
-    // $('#mainContainer').hide();
-    // $('[id$=_articles]').hide();
   })
   .ajaxStop(() => {
-    console.log('ajaxed!');
     $('#loadingbar').attr('style', 'width: 100%');
     $('#loading').slideUp(600, () => {
-      // $('#mainContainer').fadeIn('slow');
-
     });
   })
   .ajaxComplete(() => {
     loadingStatus += 20;
-    console.log(loadingStatus);
     $('[id$=_articles]').fadeIn('slow');
     $('#loadingbar').attr('style', `width: ${loadingStatus}%`);
   });
@@ -48,19 +42,7 @@ function getCategory(callback, category) {
 }
 
 function renderCategories(categories) {
-  console.log(categories);
   $('#article_list').empty();
-  // for each category
-  // categories.forEach((category) => {
-  //
-  //   console.log(category);
-    // for (const article in store) {
-    //   console.log(article);
-    //   if (article.category.includes(category)) {
-    //     console.log(article.id);
-    //   }
-    // }
-    // console.log('END');
 
   for (const category in categories) {
     $('#article_list').append(`
@@ -70,7 +52,6 @@ function renderCategories(categories) {
        </div>
      </div>
      `);
-    console.log(categories[category]);
     categories[category].forEach((articleId) => {
       $(`#${category}_articles`).append(
            `<a href="/browse/${store[articleId].id}" class="list-group-item">
@@ -112,7 +93,6 @@ function getKnowledgeBase() {
           category: entry.category,
         };
       });
-      console.log(data.categories);
       renderCategories(data.categories);
     },
     error() {
