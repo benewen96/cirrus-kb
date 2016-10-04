@@ -56,13 +56,12 @@
 	});
 
 	var store = {};
-	var categories = [];
 	// *** PRELOADER ***
 	var loadingStatus = 0;
 	$(document).ajaxStart(function () {
 	  console.log('ajaxing...');
 	  // $('#mainContainer').hide();
-	  $('[id$=_articles]').hide();
+	  // $('[id$=_articles]').hide();
 	}).ajaxStop(function () {
 	  console.log('ajaxed!');
 	  $('#loadingbar').attr('style', 'width: 100%');
@@ -73,6 +72,7 @@
 	}).ajaxComplete(function () {
 	  loadingStatus += 20;
 	  console.log(loadingStatus);
+	  $('[id$=_articles]').fadeIn('slow');
 	  $('#loadingbar').attr('style', 'width: ' + loadingStatus + '%');
 	});
 	//* * END **/
@@ -87,24 +87,37 @@
 
 	    success: function success(data) {
 	      callback(data);
-	      $('[id$=_articles]').fadeIn('slow');
 	    }
 	  });
 	}
 
-	function renderCategories() {
+	function renderCategories(categories) {
 	  console.log(categories);
 	  $('#article_list').empty();
-	  categories.forEach(function (category) {
-	    $('#article_list').append('\n       <div class="panel panel-default">\n         <div class="panel-heading">' + category + '</div>\n         <div class="list-group" id=\'' + category + '_articles\'>\n         </div>\n       </div>\n       ');
+	  // for each category
+	  // categories.forEach((category) => {
+	  //
+	  //   console.log(category);
+	  // for (const article in store) {
+	  //   console.log(article);
+	  //   if (article.category.includes(category)) {
+	  //     console.log(article.id);
+	  //   }
+	  // }
+	  // console.log('END');
 
-	    getCategory(function (data) {
-	      data.forEach(function (article) {
-	        $('#' + article.category + '_articles').append('<a href="/browse/' + article.id + '" class="list-group-item">\n           <h4 class="list-group-item-heading">' + article.title + '</h4>\n           <p class="list-group-item-text">By ' + article.author + '</p>\n           <p class="list-group-item-text"><i>' + article.category + '</i></p>\n         </a>');
-	        $('#' + article.category + '_articles').hide();
-	      });
-	    }, category);
-	  });
+	  var _loop = function _loop(category) {
+	    $('#article_list').append('\n     <div class="panel panel-default">\n       <div class="panel-heading">' + category + '</div>\n       <div class="list-group" id=\'' + category + '_articles\'>\n       </div>\n     </div>\n     ');
+	    console.log(categories[category]);
+	    categories[category].forEach(function (articleId) {
+	      $('#' + category + '_articles').append('<a href="/browse/' + store[articleId].id + '" class="list-group-item">\n             <h4 class="list-group-item-heading">' + store[articleId].title + '</h4>\n             <p class="list-group-item-text">By ' + store[articleId].author + '</p>\n             <p class="list-group-item-text"><i>' + store[articleId].category + '</i></p>\n           </a>');
+	      $('#' + store[articleId].category + '_articles').hide();
+	    });
+	  };
+
+	  for (var category in categories) {
+	    _loop(category);
+	  }
 	}
 
 	function getKnowledgeBase() {
@@ -135,10 +148,8 @@
 	          category: entry.category
 	        };
 	      });
-	      for (var category in data.categories) {
-	        categories.push(category);
-	      }
-	      renderCategories();
+	      console.log(data.categories);
+	      renderCategories(data.categories);
 	    },
 	    error: function error() {
 	      // hopefully nothing here :)

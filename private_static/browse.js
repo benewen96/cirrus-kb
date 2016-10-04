@@ -8,14 +8,13 @@ const articles = lunr(function construct() {
 });
 
 const store = {};
-const categories = [];
 // *** PRELOADER ***
 let loadingStatus = 0;
 $(document)
   .ajaxStart(() => {
     console.log('ajaxing...');
     // $('#mainContainer').hide();
-    $('[id$=_articles]').hide();
+    // $('[id$=_articles]').hide();
   })
   .ajaxStop(() => {
     console.log('ajaxed!');
@@ -28,6 +27,7 @@ $(document)
   .ajaxComplete(() => {
     loadingStatus += 20;
     console.log(loadingStatus);
+    $('[id$=_articles]').fadeIn('slow');
     $('#loadingbar').attr('style', `width: ${loadingStatus}%`);
   });
 //* * END **/
@@ -43,36 +43,45 @@ function getCategory(callback, category) {
 
     success(data) {
       callback(data);
-      $('[id$=_articles]').fadeIn('slow');
     },
   });
 }
 
-function renderCategories() {
+function renderCategories(categories) {
   console.log(categories);
   $('#article_list').empty();
-  categories.forEach((category) => {
-    $('#article_list').append(`
-       <div class="panel panel-default">
-         <div class="panel-heading">${category}</div>
-         <div class="list-group" id='${category}_articles'>
-         </div>
-       </div>
-       `);
+  // for each category
+  // categories.forEach((category) => {
+  //
+  //   console.log(category);
+    // for (const article in store) {
+    //   console.log(article);
+    //   if (article.category.includes(category)) {
+    //     console.log(article.id);
+    //   }
+    // }
+    // console.log('END');
 
-    getCategory((data) => {
-      data.forEach((article) => {
-        $(`#${article.category}_articles`).append(
-         `<a href="/browse/${article.id}" class="list-group-item">
-           <h4 class="list-group-item-heading">${article.title}</h4>
-           <p class="list-group-item-text">By ${article.author}</p>
-           <p class="list-group-item-text"><i>${article.category}</i></p>
-         </a>`
-         );
-        $(`#${article.category}_articles`).hide();
-      });
-    }, category);
-  });
+  for (const category in categories) {
+    $('#article_list').append(`
+     <div class="panel panel-default">
+       <div class="panel-heading">${category}</div>
+       <div class="list-group" id='${category}_articles'>
+       </div>
+     </div>
+     `);
+    console.log(categories[category]);
+    categories[category].forEach((articleId) => {
+      $(`#${category}_articles`).append(
+           `<a href="/browse/${store[articleId].id}" class="list-group-item">
+             <h4 class="list-group-item-heading">${store[articleId].title}</h4>
+             <p class="list-group-item-text">By ${store[articleId].author}</p>
+             <p class="list-group-item-text"><i>${store[articleId].category}</i></p>
+           </a>`
+           );
+      $(`#${store[articleId].category}_articles`).hide();
+    });
+  }
 }
 
 function getKnowledgeBase() {
@@ -103,10 +112,8 @@ function getKnowledgeBase() {
           category: entry.category,
         };
       });
-      for (const category in data.categories) {
-        categories.push(category);
-      }
-      renderCategories();
+      console.log(data.categories);
+      renderCategories(data.categories);
     },
     error() {
           // hopefully nothing here :)

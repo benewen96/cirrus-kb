@@ -144,15 +144,22 @@ router.get('/json', (req, res) => {
           const arr = record.Category__c.split(', ');
           // for each of the multiple categories
           arr.forEach((cat) => {
+            // if category doesnt exist yet
             if (!categories[cat]) {
+              // create array at category address
               categories[cat] = [];
             }
+            // push our record into the category
             categories[cat].push(record.Id);
           });
+        // else there must be one category only
         } else {
+          // if category doesnt exist yet
           if (!categories[record.Category__c]) {
+            // create array at category address
             categories[record.Category__c] = [];
           }
+          // push our record into the category
           categories[record.Category__c].push(record.Id);
         }
       }
